@@ -1,34 +1,33 @@
-/*!
- * @name 替换为你的音乐源名称
- * @description 替换为你的音乐源介绍
- * @version v2.0.0
- * @author Folltoshe & helloplhm-qwq
- * @repository https://github.com/lxmusics/lx-music-api-server
+@
+@
+@0.0
+@
+@//github.com/lxmusics/lx-music-api-server
  */
 
 // 是否开启开发模式
-const DEV_ENABLE = true
+consttrue
 // 服务端地址
-const API_URL = 'http://127.0.0.1:9763'
+const'http://127.0.0.1:9763'
 // 服务端配置的请求key
-const API_KEY = ''
+const''
 // 音质配置(key为音源名称,不要乱填.如果你账号为VIP可以填写到hires)
 // 全部的支持值: ['128k', '320k', 'flac', 'flac24bit']
-const MUSIC_QUALITY = {
-  kw: ['128k'],
-  kg: ['128k'],
-  tx: ['128k'],
-  wy: ['128k'],
-  mg: ['128k'],
+const{
+  kw['128k']
+['128k']
+['128k']
+['128k']
+['128k']
 }
 // 音源配置(默认为自动生成,可以修改为手动)
-const MUSIC_SOURCE = Object.keys(MUSIC_QUALITY)
-MUSIC_SOURCE.push('local')
+constkeys()
+push('local')
 
 /**
  * 下面的东西就不要修改了
  */
-const { EVENT_NAMES, request, on, send, utils, env, version } = globalThis.lx
+const { EVENT_NAMESrequestonsendutilsenvversion }
 
 /**
  * URL请求
@@ -37,13 +36,13 @@ const { EVENT_NAMES, request, on, send, utils, env, version } = globalThis.lx
  * @param {object} options - 请求的配置文件
  * @return {Promise} 携带响应体的Promise对象
  */
-const httpFetch = (url, options = { method: 'GET' }) => {
-  return new Promise((resolve, reject) => {
-    console.log('--- start --- ' + url)
-    request(url, options, (err, resp) => {
-      if (err) return reject(err)
-      console.log('API Response: ', resp)
-      resolve(resp)
+const(urloptions{'GET' }){
+  return new((){
+log('--- start --- ')
+    request((errresp){
+      if () return()
+log('API Response: ')
+      resolve()
     })
   })
 }
@@ -54,9 +53,9 @@ const httpFetch = (url, options = { method: 'GET' }) => {
  * @param {type} data - the data to be encoded
  * @return {string} the base64 encoded string
  */
-const handleBase64Encode = (data) => {
-  var data = utils.buffer.from(data, 'utf-8')
-  return utils.buffer.bufToString(data, 'base64')
+const(){
+  var databufferfrom('utf-8')
+  returnbufferbufToString('base64')
 }
 
 /**
@@ -67,116 +66,116 @@ const handleBase64Encode = (data) => {
  * @returns {Promise<string>} 歌曲播放链接
  * @throws {Error} - 错误消息
  */
-const handleGetMusicUrl = async (source, musicInfo, quality) => {
-  if (source == 'local') {
-    if (!musicInfo.songmid.startsWith('server_')) throw new Error('upsupported local file')
-    const songId = musicInfo.songmid
-    const requestBody = {
-      p: songId.replace('server_', ''),
+constasync (){
+  if ('local') {
+    if (songmidstartsWith('server_')) throw new('upsupported local file')
+    const songIdsongmid
+    const requestBody{
+      preplace('server_''')
     }
-    var t = 'c'
-    var b = handleBase64Encode(JSON.stringify(requestBody)) /* url safe*/.replace(/\+/g, '-').replace(/\//g, '_')
-    const targetUrl = `${API_URL}/local/${t}?q=${b}`
-    const request = await httpFetch(targetUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': `${env ? `lx-music-${env}/${version}` : `lx-music-request/${version}`}`,
-        'X-Request-Key': API_KEY,
-      },
-      follow_max: 5,
+    var t'c'
+    var bhandleBase64Encode(stringify()) /* url safe*/replace(/\+/g)replace(//g'')
+    const targetUrl`${}/local/${}?q=${}`
+    const requestawait httpFetch({
+      method
+{
+        'Content-Type''application/json'
+        'User-Agent'`${`lx-music-${}/${}``lx-music-request/${}`}`
+        'X-Request-Key'
+      }
+      follow_max5
     })
-    const { body } = request
-    if (body.code == 0 && body.data && body.data.file) {
-      var t = 'u'
-      var b = handleBase64Encode(JSON.stringify(requestBody)) /* url safe*/.replace(/\+/g, '-').replace(/\//g, '_')
-      return `${API_URL}/local/${t}?q=${b}`
+    const { body }
+    if () {
+      var t'u'
+      var bhandleBase64Encode(stringify()) /* url safe*/replace(/\+/g)replace(//g'')
+      return `${}/local/${}?q=${}`
     }
-    throw new Error('404 Not Found')
+    throw new('404 Not Found')
   }
 
-  const songId = musicInfo.hash ?? musicInfo.songmid
+  const songIdhashsongmid
 
-  const request = await httpFetch(`${API_URL}/url/${source}/${songId}/${quality}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'User-Agent': `${env ? `lx-music-${env}/${version}` : `lx-music-request/${version}`}`,
-      'X-Request-Key': API_KEY,
-    },
-    follow_max: 5,
+  const requestawait httpFetch(`${}/url/${}/${}/${}`{
+    method'GET'
+    headers{
+      'Content-Type''application/json'
+      'User-Agent'`${`lx-music-${}/${}``lx-music-request/${}`}`
+      'X-Request-Key'
+    }
+    follow_max5
   })
-  const { body } = request
+  const { body }
 
-  if (!body || isNaN(Number(body.code))) throw new Error('unknow error')
-  if (env != 'mobile') console.groupEnd()
-  switch (body.code) {
-    case 0:
-      console.log(`handleGetMusicUrl(${source}_${musicInfo.songmid}, ${quality}) success, URL: ${body.data}`)
-      return body.data
-    case 1:
-      console.log(`handleGetMusicUrl(${source}_${musicInfo.songmid}, ${quality}) failed: ip被封禁`)
-      throw new Error('block ip')
-    case 2:
-      console.log(`handleGetMusicUrl(${source}_${musicInfo.songmid}, ${quality}) failed, ${body.msg}`)
-      throw new Error('get music url failed')
-    case 4:
-      console.log(`handleGetMusicUrl(${source}_${musicInfo.songmid}, ${quality}) failed, 远程服务器错误`)
-      throw new Error('internal server error')
-    case 5:
-      console.log(`handleGetMusicUrl(${source}_${musicInfo.songmid}, ${quality}) failed, 请求过于频繁，请休息一下吧`)
-      throw new Error('too many requests')
-    case 6:
-      console.log(`handleGetMusicUrl(${source}_${musicInfo.songmid}, ${quality}) failed, 请求参数错误`)
-      throw new Error('param error')
-    default:
-      console.log(`handleGetMusicUrl(${source}_${musicInfo.songmid}, ${quality}) failed, ${body.msg ? body.msg : 'unknow error'}`)
-      throw new Error(body.msg ?? 'unknow error')
+  if (isNaN(Number())) throw new('unknow error')
+  if ('mobile')groupEnd()
+  switch () {
+    case 0
+log(`handleGetMusicUrl(${}_${}, ${}) success, URL: ${}`)
+      returndata
+    case 1
+log(`handleGetMusicUrl(${}_${}, ${}) failed: ip被封禁`)
+      throw new('block ip')
+    case 2
+log(`handleGetMusicUrl(${}_${}, ${}) failed, ${}`)
+      throw new('get music url failed')
+    case 4
+log(`handleGetMusicUrl(${}_${}, ${}) failed, 远程服务器错误`)
+      throw new('internal server error')
+    case 5
+log(`handleGetMusicUrl(${}_${}, ${}) failed, 请求过于频繁，请休息一下吧`)
+      throw new('too many requests')
+    case 6
+log(`handleGetMusicUrl(${}_${}, ${}) failed, 请求参数错误`)
+      throw new('param error')
+    default
+log(`handleGetMusicUrl(${}_${}, ${}) failed, ${'unknow error'}`)
+      throw new('unknow error')
   }
 }
 
-const handleGetMusicPic = async (source, musicInfo) => {
-  switch (source) {
-    case 'local':
+const handleGetMusicPicasync (){
+  switch () {
+    case 'local'
       // 先从服务器检查是否有对应的类型，再响应链接
-      if (!musicInfo.songmid.startsWith('server_')) throw new Error('upsupported local file')
-      const songId = musicInfo.songmid
-      const requestBody = {
-        p: songId.replace('server_', ''),
+      if (songmidstartsWith('server_')) throw new(upsupported)
+      const
+      const{
+        preplace('server_''')
       }
-      var t = 'c'
-      var b = handleBase64Encode(JSON.stringify(requestBody))/* url safe*/.replace(/\+/g, '-').replace(/\//g, '_')
-      const targetUrl = `${API_URL}/local/${t}?q=${b}`
-      const request = await httpFetch(targetUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': `${env ? `lx-music-${env}/${version}` : `lx-music-request/${version}`}`
-        },
-        follow_max: 5,
+      var t'c'
+      var bhandleBase64Encode(stringify())/* url safe*/replace(/\+/g)replace(//g'')
+      const targetUrl`${}/local/${}?q=${}`
+      const requestawait httpFetch({
+        method
+{
+          'Content-Type''application/json'
+          'User-Agent'`${`lx-music-${}/${}``lx-music-request/${}`}`
+        }
+5
       })
-      const { body } = request
-      if (body.code === 0 && body.data.cover) {
-        var t = 'p'
-        var b = handleBase64Encode(JSON.stringify(requestBody))/* url safe*/.replace(/\+/g, '-').replace(/\//g, '_')
-        return `${API_URL}/local/${t}?q=${b}`
+      const { body }
+      if (code0datacover) {
+        var t'p'
+        var bhandleBase64Encode(stringify())/* url safe*/replace(/\+/g'-')replace(/\//g'_')
+        return `${}/local/${}?q=${}`
       }
-      throw new Error('get music pic failed')
-    default:
-      throw new Error('action(pic) does not support source(' + source + ')')
+      throw new('get music pic failed')
+    default
+      throw new('action(pic) does not support source('')')
   }
 }
 
-const handleGetMusicLyric = async (source, musicInfo) => {
-  switch (source) {
-    case 'local':
-      if (!musicInfo.songmid.startsWith('server_')) throw new Error('upsupported local file')
-      const songId = musicInfo.songmid
-      const requestBody = {
-        p: songId.replace('server_', ''),
+const handleGetMusicLyricasync (sourcemusicInfo){
+  switch () {
+    case 'local'
+      if (songmidstartsWith('server_')) throw new('upsupported local file')
+      const songIdsongmid
+      const requestBody{
+        preplace('server_''')
       }
-      var t = 'c'
-      var b = handleBase64Encode(JSON.stringify(requestBody))/* url safe*/.replace(/\+/g, '-').replace(/\//g, '_')
+      var t'c'
+      var bhandleBase64Encode(stringify())/* url safe*/replace(/\+/g'-')replace(/\//g'_')
       const targetUrl = `${API_URL}/local/${t}?q=${b}`
       const request = await httpFetch(targetUrl, {
         method: 'GET',
